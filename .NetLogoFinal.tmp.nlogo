@@ -83,14 +83,14 @@ to ray [offset]
   if ra > 270 and ra < 360 [
     set xdist (cos (360 - ra))/((ceiling px) - px)
     set ydist (cos (ra - 270))/((ceiling py) - py)
-    set deltax (cos (360 - ra))
+    set deltax (cos (360 -ra))
     set deltay (cos (ra - 270))
     set stepx 1
     set stepy 1
   ]
 
   while [hit = 0] [
-    ifelse xdist < ydist [
+    ifelse [xdist < ydist] [
       set fieldx fieldx + stepx
       set xdist xdist + deltax
       set side 0
@@ -106,8 +106,6 @@ to ray [offset]
     ]
   ]
 
-
-end
 
 
 
