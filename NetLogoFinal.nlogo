@@ -2,27 +2,99 @@ globals [
   px py ;;Players x and y position
   pa ;;Player's heading
   field ;;Game map
+  fov
+  speed
 ]
 
 to setup
-  set px 0
-  set py 0
-  set pa 0
+  ca
+  set px 1.5
+  set py 1.5
+  set pa 295
+  set fov 60
+  set speed 0.12
   set field [
-    [1 1 1 1 1]
-    [1 0 0 0 1]
-    [1 0 1 0 1]
-    [1 0 0 0 1]
-    [1 1 1 1 1]
+    [1 1 1 1 1 1 1 1 1 1 1 1 1]
+    [1 0 0 0 0 0 0 0 0 1 0 0 1]
+    [1 0 0 0 0 0 0 0 0 1 0 0 1]
+    [1 0 0 1 0 0 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 1 0 0 1]
+    [1 0 0 1 0 0 1 1 1 1 0 0 1]
+    [1 0 0 0 0 0 1 0 0 1 0 0 1]
+    [1 0 1 0 0 0 1 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 1 0 0 1 0 0 1]
+    [1 0 0 0 0 0 0 0 0 1 0 0 1]
+    [1 0 0 0 0 1 0 0 1 0 0 0 1]
+    [1 0 0 1 0 0 0 0 1 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 1 0 0 0 0 0 0 0 1 0 0 1]
+    [1 1 1 1 1 1 1 1 1 1 1 1 1]
+
+  ]
+  resize-world -150 150 -75 75
+  set-patch-size 4
+end
+
+to update-frame
+  ask patches with [pycor < 0] [set pcolor 8]
+  ask patches with [pycor >= 0] [set pcolor 96]
+  let ai fov / (max-pxcor * 2)
+  let i min-pxcor
+  while [i < max-pxcor] [
+    ray (ai * i) i
+    set i i + 1
   ]
 end
 
-to ray [offset]
+to move-forward
+  if item (int py) item (int (px + (0.2 * cos pa))) field = 0 [set px px + (speed * cos pa)]
+  if item (int (py + (-0.2 * cos pa))) item (int px) field = 0 [set py py + (-1 * speed * sin pa)]
+end
+
+
+to move-backward
+  if item (int py) item (int (px - (0.2 * cos pa))) field = 0 [set px px - (speed * cos pa)]
+  if item (int (py - (-0.2 * cos pa))) item (int px) field = 0 [set py py - (-1 * speed * sin pa)]
+end
+
+to turn-right
+  set pa (pa + 5) mod 360
+end
+
+to turn-left
+  set pa (pa - 5)
+  if pa < 0 [set pa 360 + pa]
+end
+
+to play
+  update-frame
+end
+
+
+to line [dist x side]
+  let height max-pxcor / ((dist + 1) * 1)
+  ask patches with [pxcor = x and (abs pycor) < height] [
+    if side = 0 [
+      set pcolor 16
+    ]
+    if side = 1 [
+      set pcolor 15
+    ]
+    set pcolor pcolor - (0.1 * dist)
+  ]
+end
+
+to ray [offset x]
   let ra pa + offset
+  if ra < 0 [set ra 360 + ra]
+  set ra ra mod 360
   let xdist 0
   let ydist 0
-  let deltax 0
-  let deltay 0
+  let deltax 1
+  let deltay 1
   let stepx 0
   let stepy 0
   let fieldx (int px)
@@ -31,63 +103,41 @@ to ray [offset]
   let side 0
   let finaldist 0
 
-  if ra = 0 [ ;;Facing directly right
-    set xdist (ceiling px) - px
-    set ydist 0
-    set stepx 1
-    set stepy 0
+  ifelse ra mod 90 != 0 [
+    set deltax 1 / (abs cos ra)
+    set deltay 1 / (abs sin ra)
   ]
-  if ra = 180 [ ;;Facing directly left
-    set xdist px - (floor px)
-    set ydist 0
-    set stepx -1
-    set stepy 0
-  ]
-  if ra = 270 [ ;;Facing directly down (y increases downwards)
-    set ydist (ceiling py) - py
-    set xdist 0
-    set stepx 0
-    set stepy 1
-  ]
-  if ra = 90 [ ;;Facing directly up
-    set ydist py - (floor py)
-    set xdist 0
-    set stepx 0
-    set stepy -1
+  [
+    ifelse ra mod 180 = 0 [set deltay 100000] [set deltax 100000]
   ]
 
-  if ra > 0 and ra < 90 [
-    set xdist (cos ra)/((ceiling px) - px)
-    set ydist (cos (90 - ra))/(py - (floor py))
-    set deltax (cos ra)
-    set deltay (cos (90 - ra))
+  if ra >= 0 and ra < 90 [
+    set xdist (fieldx + 1 - px) * deltax
+    set ydist (py - fieldy) * deltay
     set stepx 1
     set stepy -1
   ]
-  if ra > 90 and ra < 180 [
-    set xdist (cos (180 - ra))/(px - (floor px))
-    set ydist (cos (ra - 90))/(py - (floor py))
-    set deltax (cos (180 - ra))
-    set deltay (cos (ra - 90))
+  if ra >= 90 and ra < 180 [
+    set xdist (px - fieldx) * deltax
+    set ydist (py - fieldy) * deltay
     set stepx -1
     set stepy -1
   ]
-  if ra > 180 and ra < 270 [
-    set xdist (cos (ra - 180))/(px - (floor px))
-    set ydist (cos (270 - ra))/((ceiling py) - py)
-    set deltax (cos (ra - 180))
-    set deltay (cos (270 - ra))
+  if ra >= 180 and ra < 270 [
+    set xdist (px - fieldx) * deltax
+    set ydist (fieldy + 1 - py) * deltay
     set stepx -1
     set stepy 1
   ]
-  if ra > 270 and ra < 360 [
-    set xdist (cos (360 - ra))/((ceiling px) - px)
-    set ydist (cos (ra - 270))/((ceiling py) - py)
-    set deltax (cos (360 - ra))
-    set deltay (cos (ra - 270))
+  if ra >= 270 and ra < 360 [
+    set xdist (fieldx + 1 - px) * deltax
+    set ydist (fieldy + 1 - py) * deltay
     set stepx 1
     set stepy 1
   ]
+
+  set xdist xdist - 1
+  set ydist ydist - 1
 
   while [hit = 0] [
     ifelse xdist < ydist [
@@ -102,15 +152,11 @@ to ray [offset]
     ]
     if item fieldy item fieldx field = 1 [
       set hit 1
-      ifelse xdist < ydist [set finaldist xdist] [set finaldist ydist]
+      ifelse side = 0 [set finaldist xdist - deltax] [set finaldist ydist - deltay]
     ]
   ]
-
-
+  line finaldist x side
 end
-
-
-
 
 
 
@@ -121,13 +167,13 @@ end
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+115
+180
+1327
+793
 -1
 -1
-13.0
+4.0
 1
 10
 1
@@ -137,15 +183,167 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
-0
-0
+-150
+150
+-75
+75
+1
+1
 1
 ticks
 30.0
+
+BUTTON
+138
+1185
+221
+1218
+NIL
+turn-left
+NIL
+1
+T
+OBSERVER
+NIL
+A
+NIL
+NIL
+1
+
+BUTTON
+817
+1185
+910
+1218
+NIL
+turn-right
+NIL
+1
+T
+OBSERVER
+NIL
+D
+NIL
+NIL
+1
+
+BUTTON
+1044
+1114
+1164
+1147
+NIL
+update-frame
+NIL
+1
+T
+OBSERVER
+NIL
+R
+NIL
+NIL
+1
+
+BUTTON
+583
+1261
+646
+1294
+NIL
+play
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+375
+1180
+498
+1213
+NIL
+move-forward
+NIL
+1
+T
+OBSERVER
+NIL
+W
+NIL
+NIL
+1
+
+BUTTON
+518
+1066
+652
+1099
+NIL
+move-backward
+NIL
+1
+T
+OBSERVER
+NIL
+S
+NIL
+NIL
+1
+
+BUTTON
+510
+1430
+577
+1463
+NIL
+setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+258
+1383
+315
+1428
+NIL
+px
+17
+1
+11
+
+MONITOR
+388
+1388
+445
+1433
+NIL
+py
+17
+1
+11
+
+MONITOR
+662
+1374
+719
+1419
+NIL
+pa
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -489,7 +687,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.0
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
