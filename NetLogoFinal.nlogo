@@ -4,6 +4,8 @@ globals [
   field ;;Game map
   fov
   speed
+  wall2
+  texturesize
 ]
 
 to setup
@@ -34,8 +36,16 @@ to setup
     [1 1 1 1 1 1 1 1 1 1 1 1 1]
 
   ]
-  resize-world -150 150 -75 75
-  set-patch-size 4
+  set texturesize 5
+  set wall2 [
+    [1 1 1 1 1]
+    [0 0 0 0 0]
+    [1 1 1 1 1]
+    [0 0 0 0 0]
+    [1 1 1 1 1]
+  ]
+  resize-world -75 75 -30 30
+  set-patch-size 8
 end
 
 to update-frame
@@ -74,16 +84,26 @@ to play
 end
 
 
-to line [dist x side]
+to line [dist x side hshift]
   let height max-pxcor / ((dist + 1) * 1)
-  ask patches with [pxcor = x and (abs pycor) < height] [
-    if side = 0 [
-      set pcolor 16
+  let increment int (height / texturesize)
+  let i 0
+  while [i < texturesize] [
+    ask patches with [pxcor = x and (abs pycor) < height]
+      let textureval item i item (int (5 * hshift)) wall2
+
+
+
+
+      if textureval = 1 [
+        set pcolor red
+      ]
+      if textureval = 0 [
+        set pcolor blue
+      ]
+      set pcolor pcolor - (0.1 * dist)
     ]
-    if side = 1 [
-      set pcolor 15
-    ]
-    set pcolor pcolor - (0.1 * dist)
+    set i i + 1
   ]
 end
 
@@ -102,6 +122,7 @@ to ray [offset x]
   let hit 0
   let side 0
   let finaldist 0
+  let hshift 0
 
   ifelse ra mod 90 != 0 [
     set deltax 1 / (abs cos ra)
@@ -144,20 +165,22 @@ to ray [offset x]
       set fieldx fieldx + stepx
       set xdist xdist + deltax
       set side 0
+      set hshift xdist * (abs sin ra)
     ]
     [
       set fieldy fieldy + stepy
       set ydist ydist + deltay
       set side 1
+      set hshift ydist * (abs cos ra)
     ]
-    if item fieldy item fieldx field = 1 [
+    let walltype item fieldy item fieldx field
+    if walltype != 0 [
       set hit 1
       ifelse side = 0 [set finaldist xdist - deltax] [set finaldist ydist - deltay]
     ]
   ]
-  line finaldist x side
+  line finaldist x side (hshift - (floor hshift))
 end
-
 
 
 
@@ -169,11 +192,11 @@ end
 GRAPHICS-WINDOW
 115
 180
-1327
-793
+1332
+680
 -1
 -1
-4.0
+8.0
 1
 10
 1
@@ -183,10 +206,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--150
-150
 -75
 75
+-30
+30
 1
 1
 1
@@ -687,7 +710,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.3.0
+NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
