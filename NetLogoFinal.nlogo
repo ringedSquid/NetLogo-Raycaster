@@ -5,6 +5,7 @@ globals [
   fov
   speed
   wall2
+  wall1
   texturesize
 ]
 
@@ -18,11 +19,11 @@ to setup
   set field [
     [1 1 1 1 1 1 1 1 1 1 1 1 1]
     [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 1 0 0 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 2 0 0 1]
+    [1 0 0 2 0 0 0 0 0 0 0 0 1]
     [1 0 0 0 0 0 0 0 0 0 0 0 1]
     [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 1 0 0 1 1 1 1 0 0 1]
+    [1 0 0 2 0 0 2 2 1 1 0 0 1]
     [1 0 0 0 0 0 1 0 0 1 0 0 1]
     [1 0 1 0 0 0 1 0 0 0 0 0 1]
     [1 0 0 0 0 0 0 0 0 0 0 0 1]
@@ -36,15 +37,32 @@ to setup
     [1 1 1 1 1 1 1 1 1 1 1 1 1]
 
   ]
-  set texturesize 5
+  set texturesize 10
   set wall2 [
-    [1 1 1 1 1]
-    [0 0 0 0 0]
-    [1 1 1 1 1]
-    [0 0 0 0 0]
-    [1 1 1 1 1]
+    [1 0 1 0 1 0 1 0 1 0]
+    [0 1 0 1 0 1 0 1 0 1]
+    [1 0 1 0 1 0 1 0 1 0]
+    [0 1 0 1 0 1 0 1 0 1]
+    [1 0 1 0 1 0 1 0 1 0]
+    [0 1 0 1 0 1 0 1 0 1]
+    [1 0 1 0 1 0 1 0 1 0]
+    [0 1 0 1 0 1 0 1 0 1]
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 1 0 1 0 1 0 1 0 1]
   ]
-  resize-world -75 75 -30 30
+  set wall1 [
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 0 0 0 0 0 0 0 0 0]
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 0 0 0 0 0 0 0 0 0]
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 0 0 0 0 0 0 0 0 0]
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 0 0 0 0 0 0 0 0 0]
+    [1 1 1 1 1 1 1 1 1 1]
+    [0 0 0 0 0 0 0 0 0 0]
+  ]
+  resize-world -45 45 -30 30
   set-patch-size 8
 end
 
@@ -84,22 +102,30 @@ to play
 end
 
 
-to line [dist x side hshift]
-  let height max-pxcor / ((dist + 1) * 1)
-  let increment int (height / texturesize)
+to line [dist x side hshift walltype]
+  let height max-pxcor / ((dist + 1) * 0.5)
+  let increment height / texturesize
   let i 0
+  let textureval 0
   while [i < texturesize] [
-    ask patches with [pxcor = x and (abs pycor) < height]
-      let textureval item i item (int (5 * hshift)) wall2
-
-
-
-
-      if textureval = 1 [
-        set pcolor red
+    ask patches with [pxcor = x and pycor >= (height / -2) + (i * increment) and pycor < (height / -2) + ((i + 1) * increment)] [
+      if walltype = 1 [
+        set textureval item (int (texturesize * hshift)) item i wall2
+         if textureval = 1 [
+          set pcolor red
+        ]
+        if textureval = 0 [
+          set pcolor blue
+        ]
       ]
-      if textureval = 0 [
-        set pcolor blue
+      if walltype = 2 [
+        set textureval item (int (texturesize * hshift)) item i wall1
+         if textureval = 1 [
+          set pcolor grey
+        ]
+        if textureval = 0 [
+          set pcolor yellow
+        ]
       ]
       set pcolor pcolor - (0.1 * dist)
     ]
@@ -123,6 +149,7 @@ to ray [offset x]
   let side 0
   let finaldist 0
   let hshift 0
+  let walltype 0
 
   ifelse ra mod 90 != 0 [
     set deltax 1 / (abs cos ra)
@@ -173,15 +200,14 @@ to ray [offset x]
       set side 1
       set hshift ydist * (abs cos ra)
     ]
-    let walltype item fieldy item fieldx field
+    set walltype item fieldy item fieldx field
     if walltype != 0 [
       set hit 1
       ifelse side = 0 [set finaldist xdist - deltax] [set finaldist ydist - deltay]
     ]
   ]
-  line finaldist x side (hshift - (floor hshift))
+  line finaldist x side (hshift - (floor hshift)) walltype
 end
-
 
 
 
@@ -192,8 +218,8 @@ end
 GRAPHICS-WINDOW
 115
 180
-1332
-680
+850
+678
 -1
 -1
 8.0
@@ -206,8 +232,8 @@ GRAPHICS-WINDOW
 1
 1
 1
--75
-75
+-45
+45
 -30
 30
 1
@@ -217,10 +243,10 @@ ticks
 30.0
 
 BUTTON
-138
-1185
-221
-1218
+156
+866
+239
+899
 NIL
 turn-left
 NIL
@@ -234,10 +260,10 @@ NIL
 1
 
 BUTTON
-817
-1185
-910
-1218
+835
+866
+928
+899
 NIL
 turn-right
 NIL
@@ -251,10 +277,10 @@ NIL
 1
 
 BUTTON
-1044
-1114
-1164
-1147
+1062
+795
+1182
+828
 NIL
 update-frame
 NIL
@@ -268,10 +294,10 @@ NIL
 1
 
 BUTTON
-583
-1261
-646
-1294
+602
+942
+665
+975
 NIL
 play
 T
@@ -285,10 +311,10 @@ NIL
 1
 
 BUTTON
-375
-1180
-498
-1213
+393
+860
+516
+893
 NIL
 move-forward
 NIL
@@ -302,10 +328,10 @@ NIL
 1
 
 BUTTON
-518
-1066
-652
-1099
+546
+876
+680
+909
 NIL
 move-backward
 NIL
@@ -319,10 +345,10 @@ NIL
 1
 
 BUTTON
-510
-1430
-577
-1463
+528
+1110
+595
+1143
 NIL
 setup
 NIL
@@ -336,10 +362,10 @@ NIL
 1
 
 MONITOR
-258
-1383
-315
-1428
+276
+1065
+333
+1110
 NIL
 px
 17
@@ -347,10 +373,10 @@ px
 11
 
 MONITOR
-388
-1388
-445
-1433
+406
+1069
+463
+1114
 NIL
 py
 17
@@ -358,10 +384,10 @@ py
 11
 
 MONITOR
-662
-1374
-719
-1419
+680
+1055
+737
+1100
 NIL
 pa
 17
