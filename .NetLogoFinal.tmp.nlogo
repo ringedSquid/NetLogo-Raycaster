@@ -59,7 +59,7 @@ to setup
     [0 1 0 1 0 1 0 1]
 
   ]
-  resize-world -25 25 -15 15
+  resize-world -45 45 -3 15
   set-patch-size 8
 end
 
@@ -219,8 +219,8 @@ end
 GRAPHICS-WINDOW
 115
 180
-531
-437
+851
+677
 -1
 -1
 8.0
@@ -233,10 +233,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--25
-25
--15
-15
+-45
+45
+-30
+30
 0
 0
 1
