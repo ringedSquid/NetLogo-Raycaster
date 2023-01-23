@@ -4,68 +4,133 @@ globals [
   field ;;Game map
   fov
   speed
-  wall2
-  wall1
+  t0
+  t1
+  t2
+  t3
+  t4
+  t5
   texturesize
+  win?
+  time
 ]
 
 to setup
   ca
-  set px 3.5
-  set py 3.5
-  set pa 0
+  reset-timer
+  set time 0
+  reset-ticks
+  set px 1.5
+  set py 1.5
+  set pa 290
   set fov 60
   set speed 0.12
+  set win? false
   set field [
-    [1 1 1 1 1 1 1 1 1 1 1 1 1]
-    [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 0 0 0 0 0 0 2 0 0 1]
-    [1 0 0 2 0 0 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 2 0 0 2 2 1 1 0 0 1]
-    [1 0 0 0 0 0 1 0 0 1 0 0 1]
-    [1 0 1 0 0 0 1 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 1 0 0 1 0 0 1]
-    [1 0 0 0 0 0 0 0 0 1 0 0 1]
-    [1 0 0 0 0 1 0 0 1 0 0 0 1]
-    [1 0 0 1 0 0 0 0 1 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 1 0 0 0 0 0 0 0 1 0 0 1]
-    [1 1 1 1 1 1 1 1 1 1 1 1 1]
+    [6 6 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+    [6 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1]
+    [1 0 1 1 1 0 1 0 0 2 0 0 0 0 0 0 0 0 0 2 0 2 0 2 0 2 0 0 1 1 1 0 1 1 1 1 0 0 0 1]
+    [1 0 1 0 0 0 2 0 2 3 0 0 3 3 3 3 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0 0 0 0 2 0 1]
+    [1 0 1 0 2 0 2 0 2 2 0 0 2 0 0 2 0 0 2 0 2 0 2 0 2 0 0 0 0 0 3 1 1 0 0 0 0 0 0 1]
+    [1 0 1 0 2 0 0 0 0 0 0 0 2 0 0 2 0 0 0 0 0 0 0 0 0 0 0 1 2 2 3 0 0 0 0 2 0 0 0 1]
+    [1 0 1 0 2 2 2 2 2 2 2 2 2 0 0 2 0 0 0 0 1 0 0 1 0 3 0 1 0 0 0 0 0 0 0 0 0 2 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 1 3 1 1 1 0 1 1 1 1 1 0 2 2 2 2 2 0 0 0 0 0 1]
+    [1 0 2 1 1 1 1 1 2 2 1 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 2 0 0 1]
+    [1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 2 0 2 0 1 0 3 0 3 3 3 3 3 3 2 0 1 1 0 0 0 0 0 0 1]
+    [1 0 1 0 0 1 0 0 0 0 0 0 1 0 1 2 0 2 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 1]
+    [1 0 0 0 0 0 0 0 2 0 0 0 4 0 0 2 0 2 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 1]
+    [1 2 0 2 0 2 0 2 2 1 0 1 4 0 1 1 0 0 0 1 0 1 0 4 0 0 0 0 0 1 1 1 1 1 1 1 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 1 0 0 4 0 1 0 0 0 0 0 0 0 0 4 0 4 4 0 0 1 0 0 1 0 0 0 0 0 0 1]
+    [1 0 4 4 4 4 4 0 0 1 2 0 4 0 4 0 0 1 0 0 0 1 0 4 0 0 4 0 0 1 0 0 1 0 0 0 0 0 0 1]
+    [1 0 3 0 0 0 4 0 0 1 0 1 4 0 4 0 0 1 0 0 0 2 0 4 4 4 4 0 0 1 0 0 1 1 1 2 2 0 0 1]
+    [1 0 3 0 1 0 4 0 0 1 0 1 4 0 4 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 3 0 2 2 4 0 0 0 0 0 0 0 4 0 0 2 0 2 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 3 0 0 0 4 0 0 0 0 1 4 0 4 0 0 2 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 4 4 4 4 0 0 1]
+    [1 0 3 2 2 0 4 0 0 0 0 0 4 0 4 0 0 0 0 0 0 0 3 0 0 0 0 0 1 0 2 0 0 0 0 0 0 0 0 1]
+    [1 0 3 0 0 0 4 0 2 0 0 0 4 0 4 0 2 0 0 3 0 0 0 0 0 0 0 0 1 0 2 0 0 0 0 4 0 0 0 1]
+    [1 0 0 0 1 0 0 0 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 3 0 0 1 0 2 0 0 2 2 2 4 0 4 1]
+    [1 0 0 0 0 0 1 0 2 0 2 0 0 0 0 0 0 0 2 0 0 3 0 0 0 3 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
+    [1 0 3 0 0 0 0 0 0 0 0 0 0 2 2 0 0 3 0 0 0 0 0 3 0 3 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
+    [1 0 0 0 0 0 1 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 1 0 2 0 0 2 0 4 0 0 4 1]
+    [1 0 4 0 1 0 1 0 0 0 0 0 2 0 1 0 1 1 1 1 1 1 0 0 0 1 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 2 0 1 0 1 0 0 0 0 1 0 0 0 1 0 0 1 0 2 0 0 2 0 0 0 1 2 1]
+    [1 0 0 4 0 4 4 4 4 4 0 0 2 0 2 0 2 0 0 0 0 1 1 1 1 1 0 0 1 0 2 2 2 2 2 1 1 1 0 1]
+    [1 1 0 4 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 5]
+    [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5]
 
   ]
   set texturesize 8
-  set wall2 [
-    [1 1 1 1 1 1 1 1]
-    [1 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 1]
-    [1 1 1 1 1 1 1 1]
-  ]
-  set wall1 [
-    [1 0 1 0 1 0 1 0]
-    [0 1 0 1 0 1 0 1]
-    [1 0 1 0 1 0 1 0]
-    [0 1 0 1 0 1 0 1]
-    [1 0 1 0 1 0 1 0]
-    [0 1 0 1 0 1 0 1]
-    [1 0 1 0 1 0 1 0]
-    [0 1 0 1 0 1 0 1]
+  set t0 [
+    [37 37 37 37 37 37 37 37]
+    [36 36 36 36 36 36 36 36]
+    [37 37 37 37 37 37 37 37]
+    [36 36 36 36 36 36 36 36]
+    [37 37 37 37 37 37 37 37]
+    [36 36 36 36 36 36 36 36]
+    [37 37 37 37 37 37 37 37]
+    [36 36 36 36 36 36 36 36]
 
   ]
-  resize-world -25 25 -15 15
-  set-patch-size 8
+  set t1 [
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+    [8 9 8 9 8 9 8 9]
+  ]
+  set t2 [
+    [6 6 6 6 6 6 6 6]
+    [6 8 8 8 6 8 8 6]
+    [6 8 8 8 6 8 8 6]
+    [6 8 8 8 6 8 8 6]
+    [6 8 8 8 6 8 8 6]
+    [6 8 8 8 6 8 8 6]
+    [6 8 8 8 6 8 8 6]
+    [6 6 6 6 6 6 6 6]
+  ]
+  set t3 [
+    [35 35 35 7 35 35 35 7 35]
+    [35 35 35 7 35 35 35 7 35]
+    [7  7  7  7 7  7  7  7  7]
+    [7 35 35 35 7 35 35 35  7]
+    [7 35 35 35 7 35 35 35  7]
+    [7  7  7  7 7  7  7  7  7]
+    [35 35 35 7 35 35 35 7 35]
+    [35 35 35 7 35 35 35 7 35]
+]
+  set t4 [
+    [67 67 67 67 67 67 67 67]
+    [67 9  9  9  9  9  9  67]
+    [67 9  9  9  9  9  9  67]
+    [67 9  9  9  9  9  9  67]
+    [67 9  9  9  9  9  9  67]
+    [67 9  9  9  9  9  9  67]
+    [67 9  9  9  9  9  9  67]
+    [67 67 67 67 67 67 67 67]
+  ]
+  set t5 [
+    [16 16 16 16 16 16 16 16]
+    [16 6  6  6  6  6  6  16]
+    [16 6  6  6  6  6  6  16]
+    [16 16  16  16  16  16  16  16]
+    [16 6  6  6  6  6  6  16]
+    [16 6  6  6  6  6  6  16]
+    [16 6  6  6  6  6  6  16]
+    [16 16 16 16 16 16 16 16]
+  ]
+
+
+
+  resize-world -35 35 -25 25
+  set-patch-size 10
 end
 
 to update-frame
-  ask patches with [pycor < 0] [set pcolor 8]
-  ask patches with [pycor >= 0] [set pcolor 96]
+  ask patches with [pycor < 0] [set pcolor 2]
+  ask patches with [pycor >= 0] [set pcolor 4]
   let ai fov / (max-pxcor * 2)
   let i min-pxcor
   while [i < max-pxcor] [
@@ -75,23 +140,18 @@ to update-frame
 end
 
 to move-forward
-  if item (int py) item (int (px + (0.2 * cos pa))) field = 0 [set px px + (speed * cos pa)]
-  if item (int (py + (-0.2 * cos pa))) item (int px) field = 0 [set py py + (-1 * speed * sin pa)]
+  if item (int py) item (int (px + (0.5 * cos pa))) field = 0 [set px px + (speed * cos pa)]
+  if item (int (py + (-0.5 * sin pa))) item (int px) field = 0 [set py py + (-1 * speed * sin pa)]
 end
 
 
 to move-backward
-  if item (int py) item (int (px - (0.2 * cos pa))) field = 0 [set px px - (speed * cos pa)]
-  if item (int (py - (-0.2 * cos pa))) item (int px) field = 0 [set py py - (-1 * speed * sin pa)]
+  if item (int py) item (int (px - (0.5 * cos pa))) field = 0 [set px px - (speed * cos pa)]
+  if item (int (py + (0.5 * sin pa))) item (int px) field = 0 [set py py - (-1 * speed * sin pa)]
 end
 
 to turn-right
-  let i 0
-  while [i < 90 / 1] [
-    set pa (pa + 1) mod 360
-    update-frame
-    set i i + 1
-  ]
+  set pa (pa + 5) mod 360
 end
 
 to turn-left
@@ -100,36 +160,52 @@ to turn-left
 end
 
 to play
-  update-frame
+  ifelse win? = true [
+    import-pcolors "WIN.png"
+    stop
+  ]
+  [
+    if (int px) = 28 and (int py) = 38 [
+      set win? true
+    ]
+    update-frame
+    set time timer
+  ]
 end
 
 
 to line [dist x side hshift walltype]
-  let height max-pxcor / ((dist + 1) * 0.5)
+  let height max-pxcor / ((dist + 1) * 0.6)
   let increment height / texturesize
   let i 0
   let textureval 0
   while [i < texturesize] [
     ask patches with [pxcor = x and pycor >= (height / -2) + (i * increment) and pycor < (height / -2) + ((i + 1) * increment)] [
       if walltype = 1 [
-        set textureval item (floor (texturesize * hshift)) item i wall2
-         if textureval = 1 [
-          set pcolor red
-        ]
-        if textureval = 0 [
-          set pcolor blue
-        ]
+        set textureval item (floor (texturesize * hshift)) item i t0
+        set pcolor textureval
       ]
       if walltype = 2 [
-        set textureval item (int (texturesize * hshift)) item i wall1
-         if textureval = 1 [
-          set pcolor grey
-        ]
-        if textureval = 0 [
-          set pcolor yellow
-        ]
+        set textureval item (int (texturesize * hshift)) item i t1
+        set pcolor textureval
       ]
-      set pcolor pcolor - (0.1 * dist)
+      if walltype = 3 [
+        set textureval item (int (texturesize * hshift)) item i t2
+        set pcolor textureval
+      ]
+      if walltype = 4 [
+        set textureval item (int (texturesize * hshift)) item i t3
+        set pcolor textureval
+      ]
+      if walltype = 5 [
+        set textureval item (int (texturesize * hshift)) item i t4
+        set pcolor textureval
+      ]
+      if walltype = 6 [
+        set textureval item (int (texturesize * hshift)) item i t5
+        set pcolor textureval
+      ]
+      set pcolor pcolor - (0.4 * dist) - (0.2 * side)
     ]
     set i i + 1
   ]
@@ -194,13 +270,13 @@ to ray [offset x]
       set fieldx fieldx + stepx
       set xdist xdist + deltax
       set side 0
-      set hshift py + (xdist * (abs cos (90 - ra)))
+      set hshift py + (1 / deltay) * xdist
     ]
     [
       set fieldy fieldy + stepy
       set ydist ydist + deltay
       set side 1
-      set hshift px + (ydist * (abs sin (90 - ra)))
+      set hshift px + (1 / deltax) * ydist
     ]
     set walltype item fieldy item fieldx field
     if walltype != 0 [
@@ -208,10 +284,8 @@ to ray [offset x]
       ifelse side = 0 [set finaldist xdist - deltax] [set finaldist ydist - deltay]
     ]
   ]
-  line finaldist x side (hshift - (floor hshift)) walltype
+  line finaldist x side (hshift - int hshift) walltype
 end
-
-
 
 
 
@@ -219,11 +293,11 @@ end
 GRAPHICS-WINDOW
 115
 180
-531
-437
+833
+699
 -1
 -1
-8.0
+10.0
 1
 10
 1
@@ -233,21 +307,21 @@ GRAPHICS-WINDOW
 1
 1
 1
+-35
+35
 -25
 25
--15
-15
-0
-0
+1
+1
 1
 ticks
 30.0
 
 BUTTON
-156
-866
-239
-899
+845
+183
+928
+216
 NIL
 turn-left
 NIL
@@ -261,10 +335,10 @@ NIL
 1
 
 BUTTON
-835
-866
-928
-899
+1204
+184
+1297
+217
 NIL
 turn-right
 NIL
@@ -278,27 +352,10 @@ NIL
 1
 
 BUTTON
-1062
-795
-1182
-828
-NIL
-update-frame
-NIL
-1
-T
-OBSERVER
-NIL
-R
-NIL
-NIL
-1
-
-BUTTON
-602
-942
-665
-975
+1067
+226
+1291
+285
 NIL
 play
 T
@@ -312,10 +369,10 @@ NIL
 1
 
 BUTTON
-393
-860
-516
-893
+934
+182
+1057
+215
 NIL
 move-forward
 NIL
@@ -329,10 +386,10 @@ NIL
 1
 
 BUTTON
-546
-876
-680
-909
+1064
+183
+1198
+216
 NIL
 move-backward
 NIL
@@ -346,10 +403,10 @@ NIL
 1
 
 BUTTON
-528
-1110
-595
-1143
+847
+227
+1056
+285
 NIL
 setup
 NIL
@@ -363,10 +420,10 @@ NIL
 1
 
 MONITOR
-276
-1065
-333
-1110
+917
+290
+974
+335
 NIL
 px
 17
@@ -374,10 +431,10 @@ px
 11
 
 MONITOR
-406
-1069
-463
-1114
+985
+293
+1042
+338
 NIL
 py
 17
@@ -385,52 +442,47 @@ py
 11
 
 MONITOR
-680
-1055
-737
-1100
-NIL
+848
+289
+911
+334
+heading
 pa
 17
+1
+11
+
+MONITOR
+1071
+293
+1293
+338
+time
+time
+4
 1
 11
 
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
-
-## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
+A simple raycaster engine made in netlogo
 
 ## HOW TO USE IT
+its reccomended that you run this on netlogo 6.3
 
-(how to use the model, including a description of each of the items in the Interface tab)
+set tick speed to max and set updates to continuous
 
-## THINGS TO NOTICE
+press setup before playing, then click play
+the game ends when you reach the end square which is surrounded by green squares
 
-(suggested things for the user to notice while running the model)
+control the player using the w, s, a, d keys
 
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Made by Kellen Yu
+and Princeden Hon
 @#$#@#$#@
 default
 true
@@ -737,7 +789,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.0
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
