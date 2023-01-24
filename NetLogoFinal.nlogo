@@ -1,3 +1,4 @@
+extensions [sound]
 globals [
   px py ;;Players x and y position
   pa ;;Player's heading
@@ -13,52 +14,60 @@ globals [
   texturesize
   win?
   time
+  auxlist
+  t6
+  t7
+  g1
+  gtime
+  g2
+  g3
+  g4
+  lose?
+  instances1
+  instances2
 ]
+patches-own [pixelcolor]
 
 to setup
   ca
   reset-timer
   set time 0
   reset-ticks
+  set gtime timer
   set px 1.5
   set py 1.5
   set pa 290
   set fov 60
   set speed 0.12
   set win? false
+  set lose? false
+  set g1 7 ;; 1
+  set g2 13 ;;8
+  set instances1 0
+  set instances2 0
   set field [
     [6 6 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
-    [6 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1]
-    [1 0 1 1 1 0 1 0 0 2 0 0 0 0 0 0 0 0 0 2 0 2 0 2 0 2 0 0 1 1 1 0 1 1 1 1 0 0 0 1]
-    [1 0 1 0 0 0 2 0 2 3 0 0 3 3 3 3 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0 0 0 0 2 0 1]
-    [1 0 1 0 2 0 2 0 2 2 0 0 2 0 0 2 0 0 2 0 2 0 2 0 2 0 0 0 0 0 3 1 1 0 0 0 0 0 0 1]
-    [1 0 1 0 2 0 0 0 0 0 0 0 2 0 0 2 0 0 0 0 0 0 0 0 0 0 0 1 2 2 3 0 0 0 0 2 0 0 0 1]
+    [6 0 0 0 0 0 1 8 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1]
+    [1 0 1 1 1 0 1 0 0 2 2 2 2 3 0 0 0 0 0 2 0 2 0 2 0 2 0 0 1 1 1 0 1 1 1 1 0 0 0 1]
+    [1 0 1 0 0 0 2 0 2 3 0 0 3 3 0 3 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0 0 0 0 2 0 1]
+    [1 8 1 0 2 0 2 0 2 2 0 0 2 3 0 2 0 0 2 0 2 0 2 0 2 0 0 0 0 0 3 1 1 0 0 0 0 0 0 1]
+    [1 1 1 0 2 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 1 2 2 3 0 0 0 0 2 0 0 0 1]
     [1 0 1 0 2 2 2 2 2 2 2 2 2 0 0 2 0 0 0 0 1 0 0 1 0 3 0 1 0 0 0 0 0 0 0 0 0 2 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 1 3 1 1 1 0 1 1 1 1 1 0 2 2 2 2 2 0 0 0 0 0 1]
+    [1 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 1 3 1 1 1 0 1 1 1 1 1 0 2 2 2 2 2 0 0 0 0 0 1]
     [1 0 2 1 1 1 1 1 2 2 1 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 2 0 0 1]
     [1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 2 0 2 0 1 0 3 0 3 3 3 3 3 3 2 0 1 1 0 0 0 0 0 0 1]
-    [1 0 1 0 0 1 0 0 0 0 0 0 1 0 1 2 0 2 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 1]
-    [1 0 0 0 0 0 0 0 2 0 0 0 4 0 0 2 0 2 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 1]
-    [1 2 0 2 0 2 0 2 2 1 0 1 4 0 1 1 0 0 0 1 0 1 0 4 0 0 0 0 0 1 1 1 1 1 1 1 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 1 0 0 4 0 1 0 0 0 0 0 0 0 0 4 0 4 4 0 0 1 0 0 1 0 0 0 0 0 0 1]
-    [1 0 4 4 4 4 4 0 0 1 2 0 4 0 4 0 0 1 0 0 0 1 0 4 0 0 4 0 0 1 0 0 1 0 0 0 0 0 0 1]
-    [1 0 3 0 0 0 4 0 0 1 0 1 4 0 4 0 0 1 0 0 0 2 0 4 4 4 4 0 0 1 0 0 1 1 1 2 2 0 0 1]
-    [1 0 3 0 1 0 4 0 0 1 0 1 4 0 4 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 0 3 0 2 2 4 0 0 0 0 0 0 0 4 0 0 2 0 2 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
-    [1 0 3 0 0 0 4 0 0 0 0 1 4 0 4 0 0 2 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 4 4 4 4 0 0 1]
-    [1 0 3 2 2 0 4 0 0 0 0 0 4 0 4 0 0 0 0 0 0 0 3 0 0 0 0 0 1 0 2 0 0 0 0 0 0 0 0 1]
-    [1 0 3 0 0 0 4 0 2 0 0 0 4 0 4 0 2 0 0 3 0 0 0 0 0 0 0 0 1 0 2 0 0 0 0 4 0 0 0 1]
-    [1 0 0 0 1 0 0 0 0 0 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 3 0 0 1 0 2 0 0 2 2 2 4 0 4 1]
-    [1 0 0 0 0 0 1 0 2 0 2 0 0 0 0 0 0 0 2 0 0 3 0 0 0 3 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
-    [1 0 3 0 0 0 0 0 0 0 0 0 0 2 2 0 0 3 0 0 0 0 0 3 0 3 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
-    [1 0 0 0 0 0 1 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 1 0 2 0 0 2 0 4 0 0 4 1]
-    [1 0 4 0 1 0 1 0 0 0 0 0 2 0 1 0 1 1 1 1 1 1 0 0 0 1 0 0 1 0 2 0 0 2 0 0 0 0 0 1]
-    [1 0 0 0 0 0 0 0 0 0 0 0 2 0 1 0 1 0 0 0 0 1 0 0 0 1 0 0 1 0 2 0 0 2 0 0 0 1 2 1]
-    [1 0 0 4 0 4 4 4 4 4 0 0 2 0 2 0 2 0 0 0 0 1 1 1 1 1 0 0 1 0 2 2 2 2 2 1 1 1 0 1]
-    [1 1 0 4 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 5]
-    [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5]
+    [1 2 1 0 0 1 0 0 0 0 0 0 1 0 1 2 0 2 0 1 0 2 0 0 0 0 0 0 0 0 0 0 1 0 0 1 1 1 1 1]
+    [1 0 0 0 0 0 0 0 2 0 0 0 4 0 0 2 0 2 0 1 0 2 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0 0 1]
+    [1 2 0 2 0 2 0 2 2 1 0 1 4 0 1 1 0 0 0 1 0 1 0 4 0 0 1 0 0 1 1 1 1 0 0 1 0 0 0 1]
+    [1 0 0 0 0 0 0 0 8 1 0 0 4 0 1 0 0 0 0 0 0 0 0 4 0 4 4 0 0 1 0 0 0 0 0 0 0 0 0 1]
+    [1 4 4 4 4 4 4 0 0 1 2 0 4 0 4 0 0 1 0 0 0 1 0 4 0 0 4 0 0 1 0 0 1 0 0 0 0 0 0 1]
+    [1 0 0 0 0 0 4 0 0 1 0 1 4 0 4 0 0 1 0 0 0 2 0 4 4 4 4 0 0 1 0 0 1 1 1 2 2 0 0 1]
+    [1 0 0 4 1 0 0 0 0 1 0 1 4 0 4 0 0 0 0 2 0 2 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+    [1 0 0 4 2 2 0 0 0 0 0 0 0 0 4 0 0 2 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+    [7 7 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
 
   ]
+
   set texturesize 8
   set t0 [
     [37 37 37 37 37 37 37 37]
@@ -121,9 +130,26 @@ to setup
     [16 6  6  6  6  6  6  16]
     [16 16 16 16 16 16 16 16]
   ]
-
-
-
+ set t6 [
+    [5.8 5.8 5.8 5.8 5.8 5.8 5.8 5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 34.3  5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 34.3 5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 110 5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 34.3 5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 34.3 5.8]
+    [5.8 5.8 34.3 34.3 34.3 34.3 34.3 5.8]
+    [5.8 5.8 5.8 5.8 5.8 5.8 5.8 5.8]
+  ]
+  set t7 [
+    [105 105 105 105 105 105 105 105]
+    [105 15 15 15 15 15 15 105]
+    [105 15 105 105 105 105 15 105]
+    [105 105 105 105 105 105 105 105]
+    [105 105 105 105 105 105 105 105]
+    [105 15 105 105 105 105 15 105]
+    [105 15 105 105 105 105 15 105]
+   [105 105 105 105 105 105 105 105]
+  ]
   resize-world -35 35 -25 25
   set-patch-size 10
 end
@@ -160,18 +186,66 @@ to turn-left
 end
 
 to play
-  ifelse win? = true [
-    import-pcolors "WIN.png"
+
+  ifelse win? = true and lose? = false [
+    import-drawing "WIN.png"
+    sound:play-sound-and-wait "yay.wav"
     stop
   ]
   [
-    if (int px) = 28 and (int py) = 38 [
+    if (int px) = 17 and (int py) = 1 [
       set win? true
     ]
+    if timer > 5 + instances1  [
+      set auxlist replace-item g1 item 1 field 0
+      set field replace-item 1 field auxlist
+
+    ifelse  g1 != 20 [
+      set g1 g1 + 1
+      set auxlist replace-item g1 item 1 field 8
+      set field replace-item 1 field auxlist
+
+           set instances1 instances1 + 1
+        print 1
+      ]
+      [
+        set g1 7
+        set auxlist replace-item g1 item 1 field 8
+       set field replace-item 1 field auxlist
+        set instances1 instances1 + 1
+    ]
+    ]
+    if timer > 5 + instances2  [
+      set auxlist replace-item 8 item g2 field 0
+      set field replace-item g2 field auxlist
+
+    ifelse  g2 != 17 [
+      set g2 g2 + 1
+      set auxlist replace-item 8 item g2 field 8
+      set field replace-item g2 field auxlist
+
+         set instances2 instances2 + 1
+      ]
+      [
+        set g2 13
+        set auxlist replace-item 8 item 13 field 8
+       set field replace-item 13 field auxlist
+
+    set instances2 instances2 + 1
+    ]
+
+    ]
     update-frame
+
+  if int py = g1 and int px = 1
+  [set lose? true import-drawing "lose.png"  sound:play-sound-and-wait "laugh.wav" stop]
+   if int py = 8 and int px = g2
+   [set lose? true import-drawing "lose.png"  sound:play-sound-and-wait "laugh.wav" stop]
     set time timer
+
   ]
 end
+
 
 
 to line [dist x side hshift walltype]
@@ -203,6 +277,14 @@ to line [dist x side hshift walltype]
       ]
       if walltype = 6 [
         set textureval item (int (texturesize * hshift)) item i t5
+        set pcolor textureval
+      ]
+       if walltype = 7 [
+        set textureval item (int (texturesize * hshift)) item i t6
+        set pcolor textureval
+      ]
+       if walltype = 8 [
+        set textureval item (int (texturesize * hshift)) item i t7
         set pcolor textureval
       ]
       set pcolor pcolor - (0.4 * dist) - (0.2 * side)
@@ -288,13 +370,12 @@ to ray [offset x]
 end
 
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 115
 180
-833
-699
+876
+728
 -1
 -1
 10.0
