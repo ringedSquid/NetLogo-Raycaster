@@ -9,7 +9,6 @@ Making this raycaster was fun, not only because of the fact that I was trying to
 </p>
 <br>
 <h3>How to run</h3>
-<p>
 * Netlogo version required: 6.3.0 or higher. <br>
 * Make sure to set the tick speed to max and set view updates to "on ticks". <br>
 * press the setup button to initialize the raycaster. <br>
@@ -23,4 +22,3 @@ Making this raycaster was fun, not only because of the fact that I was trying to
 * Your goal is to navigate the maze and look for the exit while avoiding the main enemy of the game: greg the cube. <br>
     * Greg's program is very basic and doesn't work half the time, this was due to time constraints on this project. <br>
 * Have fun!!! <br>
-</p> 
