@@ -30,10 +30,10 @@ Your goal is to navigate the maze and reach the exit while avoiding the main ene
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/ringedSquid/NetLogo-Raycaster/blob/cd7c15710c3b6a521707aeba0ad1be5af7124adc/screenshots/01.gif)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/ringedSquid/NetLogo-Raycaster/blob/cd7c15710c3b6a521707aeba0ad1be5af7124adc/screenshots/02.gif)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/ringedSquid/NetLogo-Raycaster/blob/cd7c15710c3b6a521707aeba0ad1be5af7124adc/screenshots/03.png)
 
 
