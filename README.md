@@ -9,17 +9,17 @@ Making this raycaster was fun, not only because of the fact that I was trying to
 </p>
 <br>
 <h3>How to run</h3>
-<p>Netlogo version required: 6.3.0 or higher. </p>
-<p>Make sure to set the tick speed to max and set view updates to "on ticks". </p>
-<p>Press the setup button to initialize the raycaster. </p>
-When you're ready press play to start it!
-The movement buttons are mapped to the keyboard:
-    w -> forward
-    s -> backward
-    a -> turn left
-    d -> turn right
-make sure your cursor is outside the rendering window for the keymaps to work properly.
-Your goal is to navigate the maze and look for the exit while avoiding the main enemy of the game: greg the cube.
-Greg's program is very basic and doesn't work half the time, this was due to time constraints on this project.
-Have fun!!!
+<p>Netlogo version required: 6.3.0 or higher. <br>
+<p>Make sure to set the tick speed to max and set view updates to "on ticks". <br>
+<p>Press the setup button to initialize the raycaster. <br>
+When you're ready press play to start it! <br>
+The movement buttons are mapped to the keyboard: <br>
+    w -> forward <br>
+    s -> backward <br>
+    a -> turn left <br>
+    d -> turn right <br>
+make sure your cursor is outside the rendering window for the keymaps to work properly. <br>
+Your goal is to navigate the maze and look for the exit while avoiding the main enemy of the game: greg the cube. <br>
+Greg's program is very basic and doesn't work half the time, this was due to time constraints on this project. <br>
+Have fun!!! <br>
 </p> 
