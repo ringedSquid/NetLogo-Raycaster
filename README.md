@@ -9,10 +9,9 @@ Making this raycaster was fun, not only because of the fact that I was trying to
 </p>
 <br>
 <h3>How to run</h3>
-<p>
-Netlogo version required: 6.3.0 or higher.
-Make sure to set the tick speed to max and set view updates to "on ticks".
-Press the setup button to initialize the raycaster.
+<p>Netlogo version required: 6.3.0 or higher. </p>
+<p>Make sure to set the tick speed to max and set view updates to "on ticks". </p>
+<p>Press the setup button to initialize the raycaster. </p>
 When you're ready press play to start it!
 The movement buttons are mapped to the keyboard:
     w -> forward
