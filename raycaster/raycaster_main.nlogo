@@ -246,6 +246,10 @@ to play
   ]
 end
 
+to soundtest
+  sound:play-sound "laugh.wav"
+end
+
 
 
 to line [dist x side hshift walltype]
@@ -369,13 +373,12 @@ to ray [offset x]
   line finaldist x side (hshift - int hshift) walltype
 end
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 115
 180
-876
-728
+833
+699
 -1
 -1
 10.0
