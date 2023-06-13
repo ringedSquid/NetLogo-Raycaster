@@ -8,7 +8,7 @@ While netlogo is indeed quite limited, it is still quite capable. In fact I bele
 Making this raycaster was fun, not only because of the fact that I was trying to use netlogo in such an unconventional way, but also because I figured out all the maths and cool algorithms on my own time, learning them for myself instead of simple copying some guide. I built an intuition, and didn't blindly memorize or copy the code.
 </p>
 <br>
-###How to run
+### How to run
 1. Netlogo version required: 6.3.0 or higher. 
 2. Make sure to set the tick speed to max and set view updates to "on ticks".
 3. Press the setup button to initialize the raycaster. 
