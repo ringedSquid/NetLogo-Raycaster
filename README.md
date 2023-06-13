@@ -9,7 +9,7 @@ Making this raycaster was fun, not only because of the fact that I was trying to
 </p>
 <br>
 <h3>How to run</h3>
-1.   Netlogo version required: 6.3.0 or higher. <br>
+1.   Netlogo version required: 6.3.0 or higher.
 2.   Make sure to set the tick speed to max and set view updates to "on ticks". <br>
 3.   press the setup button to initialize the raycaster. <br>
 4.   When you're ready press play to start it! <br>
